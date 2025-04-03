@@ -29,10 +29,26 @@ npm run preview
 
 本项目已配置为使用GitHub Actions自动部署到GitHub Pages。每当推送到main分支时，GitHub Actions会自动构建项目并部署到GitHub Pages。
 
+### GitHub Pages 配置步骤
+
+1. 进入GitHub仓库设置页面：`https://github.com/用户名/仓库名/settings/pages`
+2. 在「Build and deployment」部分：
+   - Source: 选择「GitHub Actions」
+   - 确保已启用GitHub Pages功能
+
 ### 自动部署配置
 
-- 项目的`vite.config.js`中已设置`base`为`/luzhonjun.github.io/`
+- 项目的`vite.config.js`中已设置`base`为`/`（已更新）
 - `.github/workflows/deploy.yml`文件配置了自动构建和部署流程
+
+### 常见部署问题解决
+
+如果遇到部署错误（如404错误），请检查：
+
+1. 确认GitHub Pages已在仓库设置中正确启用
+2. 确认仓库名称格式是否为`用户名.github.io`
+   - 如果是，`vite.config.js`中的`base`应设为`/`
+   - 如果不是，`vite.config.js`中的`base`应设为`/仓库名/`
 
 ### 手动部署
 
