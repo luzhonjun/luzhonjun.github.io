@@ -220,13 +220,7 @@ onBeforeUnmount(() => {
             </div>
           </div>
         </div>
-        <div class="controls">
-          <button @click="rotatePhotoWall(-1)" class="control-btn prev">上一张</button>
-          <button @click="autoRotate = !autoRotate; autoRotate ? startAutoRotate() : stopAutoRotate()" class="control-btn play">
-            {{ autoRotate ? '暂停' : '播放' }}
-          </button>
-          <button @click="rotatePhotoWall(1)" class="control-btn next">下一张</button>
-        </div>
+        
       </div>
     </div>
   </div>
