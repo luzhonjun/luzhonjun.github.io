@@ -86,19 +86,31 @@ const setupPhotoWall = () => {
   
   // 计算合适的半径，根据照片数量动态调整
   // 照片数量越多，半径越大，避免照片重叠
-  const baseRadius = 450;
-  const radius = Math.max(baseRadius, baseRadius + (photoCount - 8) * 30);
+  const baseRadius = 480;
+  // 确保半径足够大，使所有照片都能在视野中
+  const radius = Math.max(baseRadius, baseRadius + (photoCount - 8) * 20);
   
   photoItems.forEach((item, index) => {
     // 计算每个照片的旋转角度和Z轴位移
     const rotateY = baseAngle * index;
     const translateZ = radius; // 使用动态计算的半径
     
-    const translateY = 0;  
-    
     // 设置照片的3D变换
-    item.style.transform = `rotateY(${rotateY}deg) translateZ(${translateZ}px) translateY(${translateY}px)`;
+    item.style.transform = `rotateY(${rotateY}deg) translateZ(${translateZ}px)`;
+    // 确保所有照片都可见
+    item.style.backfaceVisibility = 'hidden';
+    item.style.visibility = 'visible';
+    // 重置其他可能影响显示的样式
+    item.style.opacity = '1';
+    item.style.pointerEvents = 'auto';
   });
+  
+  // 初始化照片墙位置 - 保持水平，不添加倾斜角度
+  if (photoWallRef.value) {
+    photoWallRef.value.style.transform = 'rotateY(0deg)';
+  }
+  
+  console.log(`照片墙已设置，共有${photoCount}张照片`);
 };
 
 // 旋转照片墙
@@ -108,7 +120,26 @@ const rotatePhotoWall = (direction = 1) => {
   currentIndex.value = (currentIndex.value + direction + photos.value.length) % photos.value.length;
   const rotateY = (360 / photos.value.length) * currentIndex.value * -1;
   
+  // 平滑旋转照片墙 - 移除rotateX倾斜角度，保持照片墙水平
+  photoWallRef.value.style.transition = 'transform 0.8s ease';
   photoWallRef.value.style.transform = `rotateY(${rotateY}deg)`;
+  
+  // 更新当前照片的状态
+  const photoItems = document.querySelectorAll('.photo-item');
+  photoItems.forEach((item, index) => {
+    // 当前照片正面朝向用户，并略微前移
+    if (index === currentIndex.value) {
+      
+    } else {
+      // 恢复其他照片的原始位置
+      const baseAngle = 360 / photos.value.length;
+      const rotateY = baseAngle * index;
+      const radius = Math.max(480, 480 + (photos.value.length - 8) * 20);
+      item.style.transform = `rotateY(${rotateY}deg) translateZ(${radius}px)`;
+      item.style.zIndex = 'auto';
+    }
+  });
+
 };
 
 // 自动旋转
@@ -231,14 +262,21 @@ onBeforeUnmount(() => {
   justify-content: center;
   height: 600px;
   position: relative;
+  /* 确保容器足够大以显示所有照片 */
+  min-height: 600px;
 }
 
 .scene {
   width: 100%;
   height: 500px;
-  perspective: 1000px;
+  perspective: 1200px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  /* 增加场景大小以容纳所有照片 */
+  min-height: 500px;
+  margin: 0 auto;
+  /* 确保3D效果正确显示 */
+  transform-style: preserve-3d;
 }
 
 .photo-wall-3d {
@@ -248,6 +286,11 @@ onBeforeUnmount(() => {
   transform-style: preserve-3d;
   transition: transform 1s ease;
   transform: rotateX(5deg);
+  transform-origin: center center;
+  /* 确保所有照片都能显示 */
+  will-change: transform;
+  /* 确保3D效果正确显示 */
+  -webkit-transform-style: preserve-3d;
 }
 
 .photo-item {
@@ -259,13 +302,19 @@ onBeforeUnmount(() => {
   margin-left: -140px;
   margin-top: -190px;
   cursor: pointer;
-  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  transition: all 0.5s ease;
   transform-origin: center center;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   border-radius: 8px;
   background-color: #fff;
-  z-index: 1;
+  z-index: auto;
+  /* 确保所有照片都能显示 */
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  /* 确保照片不会消失 */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .photo-item:hover {
