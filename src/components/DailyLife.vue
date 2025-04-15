@@ -1,5 +1,14 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+
+// 计算在一起的天数
+const startDate = new Date('2024-07-19');
+const daysCount = computed(() => {
+  const today = new Date();
+  const diffTime = Math.abs(today - startDate);
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+});
 
 // 日常生活内容
 const dailyMoments = ref([
@@ -37,6 +46,11 @@ const dailyMoments = ref([
 <template>
   <div class="daily-life-container">
     <h2>我们的日常</h2>
+    <div class="days-together">
+      <span>在一起已经 </span>
+      <span class="days-count">{{ daysCount }}</span>
+      <span> 天</span>
+    </div>
     <div class="timeline">
       <div 
         v-for="moment in dailyMoments" 
@@ -64,8 +78,22 @@ const dailyMoments = ref([
 
 h2 {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   color: #333;
+}
+
+.days-together {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 18px;
+  color: #555;
+}
+
+.days-count {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ff6b6b;
+  margin: 0 5px;
 }
 
 .timeline {
